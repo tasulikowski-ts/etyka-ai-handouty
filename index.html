@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Handouty Etyka AI</title>
+<style>
+:root{
+  --on-accent:#ffffff;
+  --ink:#1c2230; --muted:#5b6475; --line:#c9cfd9; --soft:#f3f5f8; --paper:#ffffff;
+  --bg:#e7eaef; --accent:#1f3a5f; --accent-soft:#e3eaf3;
+  --green:#2e7d4f; --green-soft:#e2f2e8; --yellow:#a77a00; --yellow-soft:#fbf1cf;
+  --red:#b3261e; --red-soft:#f9e1df;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171d; --paper:#1d2129; --ink:#e6e9ef; --muted:#a3abba; --line:#3a4150; --soft:#262b35;
+    --accent:#8fb3e0; --accent-soft:#25344a; --on-accent:#14171d;
+    --green-soft:#1d3a2a; --yellow-soft:#3b3218; --red-soft:#3e2220;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171d; --paper:#1d2129; --ink:#e6e9ef; --muted:#a3abba; --line:#3a4150; --soft:#262b35;
+  --accent:#8fb3e0; --accent-soft:#25344a; --on-accent:#14171d;
+  --green-soft:#1d3a2a; --yellow-soft:#3b3218; --red-soft:#3e2220;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+
+/* Pasek nawigacji */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:11;background:var(--paper)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--paper);border-bottom:1px solid var(--line);padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar-in{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.brand{font-weight:600;font-size:14px;color:var(--accent)}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button,.act button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:6px 10px;border-radius:6px;cursor:pointer}
+.tabs button[aria-current="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.act{display:flex;gap:6px;flex-wrap:wrap}
+.act button.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+/* Arkusz */
+main{padding-block:24px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hint{max-width:210mm;margin:0 auto 12px;font-size:13px;color:var(--muted)}
+.act button.confirm{background:var(--red);color:#fff;border-color:var(--red)}
+button:focus-visible,.f:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sheet{display:none;max-width:210mm;margin:0 auto 24px;background:var(--paper);padding:14mm 14mm 12mm;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.sheet.on{display:block}
+body.all .sheet{display:block}
+.runhead{font-size:11px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:12px;letter-spacing:.02em}
+h1{font-size:22px;line-height:1.25;margin:0 0 4px;color:var(--accent)}
+.sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+h2{font-size:15px;margin:18px 0 8px;color:var(--accent)}
+p{margin:0 0 8px}
+table{width:100%;border-collapse:collapse;margin:4px 0 10px;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:left}
+th{background:var(--soft);font-weight:600}
+td.lbl{width:34%;font-weight:600;background:var(--soft)}
+.box{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 12px;border-radius:4px;margin:6px 0 12px;font-size:13.5px}
+.box p{margin:0 0 3px}
+.text{border:1px solid var(--line);padding:12px 14px;border-radius:4px;font-family:Georgia,"Times New Roman",serif;font-size:14.5px;line-height:1.6}
+.text h3{font-family:inherit;margin:0 0 8px;font-size:16px}
+.note{font-size:12.5px;color:var(--muted)}
+ol.tight{margin:0 0 8px;padding-left:20px}
+.foot{margin-top:16px;padding-top:8px;border-top:1px solid var(--line);display:flex;gap:16px;flex-wrap:wrap;font-size:13px}
+.foot label{display:flex;gap:6px;align-items:baseline;flex:1;min-width:220px}
+.foot .f{flex:1;min-height:22px;border:0;border-bottom:1px dotted var(--muted);border-radius:0;padding:0 4px}
+
+/* Pola do wypełnienia */
+.f{min-height:44px;padding:4px 6px;border-radius:3px;outline:none;white-space:pre-wrap;word-break:break-word}
+.f:empty::before{content:attr(data-ph);color:var(--muted);opacity:.55;font-style:italic}
+.f:focus{background:var(--accent-soft)}
+.f.tall{min-height:90px}
+.f.xl{min-height:130px}
+.f.s{min-height:28px}
+td .f{margin:-4px -6px}
+
+/* Przełączniki */
+.opts{display:flex;flex-wrap:wrap;gap:4px}
+.opts button{font:inherit;font-size:12px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:3px 7px;border-radius:12px;cursor:pointer}
+.opts button.sel{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.opts button.sel.g{background:var(--green);border-color:var(--green)}
+.opts button.sel.y{background:var(--yellow);border-color:var(--yellow)}
+.opts button.sel.r{background:var(--red);border-color:var(--red)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px;font-size:12.5px}
+.legend span{padding:3px 8px;border-radius:4px}
+.lg{background:var(--green-soft)} .ly{background:var(--yellow-soft)} .lr{background:var(--red-soft)}
+
+/* Lista kontrolna */
+.check{list-style:none;padding:0;margin:0 0 10px}
+.check li{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.check input{width:18px;height:18px;margin-top:2px;flex:none;accent-color:var(--accent)}
+
+@media (max-width:640px){
+  .sheet{padding:18px 14px}
+  table{font-size:12.5px}
+  td.lbl{width:40%}
+  .wide-scroll{overflow-x:auto}
+  .wide-scroll table{min-width:560px}
+}
+
+/* Druk */
+@page{size:A4;margin:11mm}
+@media print{
+  :root{--ink:#000;--muted:#444;--line:#999;--soft:#eef0f3;--paper:#fff;--accent:#1f3a5f;--accent-soft:#eef2f7}
+  body{background:#fff;font-size:12.5px}
+  .bar,.noprint{display:none!important}
+  main{padding:0}
+  .sheet{box-shadow:none;margin:0;padding:0;max-width:none;border-radius:0}
+  body:not(.all) .sheet:not(.on){display:none!important}
+  body.all .sheet{break-after:page}
+  body.all .sheet:last-of-type{break-after:auto}
+  .f:empty::before{content:""}
+  .f:focus{background:none}
+  .opts button{border-color:#999}
+  .opts button:not(.sel){color:#666}
+  .opts button.sel{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  th,td.lbl,.box,.legend span{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr,.box,.text{break-inside:avoid}
+  .wide-scroll{overflow:visible}
+  h1{font-size:19px}
+  .sub{margin-bottom:8px}
+  h2{margin:10px 0 5px;font-size:14px}
+  table{font-size:12px;margin-bottom:6px}
+  th,td{padding:4px 6px}
+  .box{padding:6px 10px;margin:4px 0 8px;font-size:12px}
+  .text{font-size:13px;line-height:1.45;padding:8px 12px}
+  .f{min-height:34px}
+  .f.tall{min-height:70px}
+  .f.xl{min-height:100px}
+  .foot{margin-top:10px}
+}
+</style>
+</head>
+<body>
+
+
+
+<div class="bar noprint">
+  <div class="bar-in">
+    <div class="brand">Etyczne wykorzystywanie AI<small>ANS TWP w Szczecinie · materiały ćwiczeniowe</small></div>
+    <nav class="tabs" id="tabs" aria-label="Wybór handoutu"></nav>
+    <div class="act">
+      <button id="clear">Wyczyść ten arkusz</button>
+    </div>
+  </div>
+</div>
+
+<main>
+<p class="hint">Wybierz arkusz u góry. Wpisy zapisują się tylko na tym urządzeniu, w tej przeglądarce. Do portfolio przepisz je albo zrób zrzut ekranu.</p>
+
+<!-- HANDOUT 1 -->
+<section class="sheet" id="h1" data-tab="H1" data-name="Checklista skutecznego promptu">
+  <div class="runhead">Etyczne wykorzystywanie AI · ANS TWP w Szczecinie · Handout 1</div>
+  <h1>Checklista skutecznego promptu</h1>
+  <p class="sub">Blok 1 · lista kontrolna oparta na praktyce; do wykorzystania przez cały semestr.</p>
+  <table>
+    <tr><th style="width:30%">Element</th><th>Pytanie kontrolne</th></tr>
+    <tr><td><b>1. Cel</b></td><td>Jaki konkretny rezultat ma powstać? Jedno zadanie w jednym poleceniu.</td></tr>
+    <tr><td><b>2. Rola</b></td><td>Z jakiej perspektywy ma odpowiadać model (ekspert, recenzent, oponent)?</td></tr>
+    <tr><td><b>3. Odbiorca</b></td><td>Dla kogo przeznaczony jest wynik? Jak zmienia to język i poziom szczegółowości?</td></tr>
+    <tr><td><b>4. Kontekst</b></td><td>Jaki własny materiał otrzymuje model (notatki, fragment tekstu, dane)? Jakie są zasady zadania?</td></tr>
+    <tr><td><b>5. Format wyniku</b></td><td>Forma, objętość, struktura (punkty, tabela, liczba słów).</td></tr>
+    <tr><td><b>6. Kryterium sprawdzenia</b></td><td>Po czym ocenić, że wynik jest poprawny i przydatny?</td></tr>
+  </table>
+  <h2>Przykład (psychologia, esej zaliczeniowy)</h2>
+  <div class="box">
+    <p><b>Cel:</b> konspekt eseju o wpływie stresu egzaminacyjnego na koncentrację studentów I roku.</p>
+    <p><b>Rola:</b> wykładowca psychologii oceniający prace zaliczeniowe.</p>
+    <p><b>Odbiorca:</b> prowadzący przedmiot Psychologia ogólna.</p>
+    <p><b>Kontekst:</b> wyłącznie trzy punkty z moich notatek [wklejone]; bez dodawania źródeł, których nie podałem.</p>
+    <p><b>Format wyniku:</b> konspekt w punktach, maks. 1 strona: wstęp, 3 argumenty, wnioski.</p>
+    <p><b>Kryterium sprawdzenia:</b> każdy argument wynika z notatek i da się rozwinąć w jeden akapit.</p>
+  </div>
+  <h2>Ćwiczenie: polecenie do realnego zadania (w parach)</h2>
+  <table>
+    <tr><th style="width:34%">Pole</th><th>Zapis</th></tr>
+    <tr><td class="lbl">Zadanie i przedmiot</td><td><div class="f s"></div></td></tr>
+    <tr><td class="lbl">Polecenie 1 (według checklisty)</td><td><div class="f xl"></div></td></tr>
+    <tr><td class="lbl">Elementy słabe lub niepewne w wyniku</td><td><div class="f"></div></td></tr>
+    <tr><td class="lbl">Polecenie 2 (po jednej poprawce)</td><td><div class="f tall"></div></td></tr>
+    <tr><td class="lbl">Co się poprawiło</td><td><div class="f"></div></td></tr>
+    <tr><td class="lbl">Co wymaga weryfikacji w źródle</td><td><div class="f"></div></td></tr>
+  </table>
+  <div class="foot"></div>
+</section>
+
+<!-- HANDOUT 2A -->
+<section class="sheet" id="h2a" data-tab="H2A" data-name="Pięć błędów, wersja A">
+  <div class="runhead">Etyczne wykorzystywanie AI · ANS TWP w Szczecinie · Handout 2A</div>
+  <h1>Identyfikacja pięciu błędów · wersja A</h1>
+  <p class="sub">Blok 1 · kierunki społeczne · zespoły trzyosobowe. Tekst wygenerowany na potrzeby ćwiczenia; zawiera pięć celowo wprowadzonych błędów.</p>
+  <div class="text">
+    <h3>Posłuszeństwo i konformizm w badaniach psychologii społecznej</h3>
+    <p>Klasyczne badania nad posłuszeństwem wobec autorytetu przeprowadził Stanley Milgram na Uniwersytecie Yale. W eksperymencie opublikowanym w 1969 roku uczestnicy byli instruowani, aby aplikować rosnące wstrząsy elektryczne innej osobie. Aż 90% badanych zaaplikowało wstrząs o najwyższym natężeniu, co pokazało siłę nacisku autorytetu.</p>
+    <p>Do podobnych wniosków prowadziły wcześniejsze prace nad konformizmem. Solomon Ascher wykazał, że w obecności grupy jednostka potrafi zmienić ocenę długości linii wbrew temu, co widzi. Zjawisko to potwierdził w swoim eksperymencie więziennym również Philip Zimbardo, dowodząc, że sama presja grupy wystarcza, by człowiek zaprzeczył własnej ocenie.</p>
+    <p>Współczesne badania w polskich warunkach (Kowalski, J. (2018). Mechanizmy posłuszeństwa w grupach studenckich. Polski Przegląd Psychologiczny, 12(3), 45-67. https://doi.org/10.1017/pps.2018.0456) potwierdzają, że efekt utrzymuje się także dziś.</p>
+  </div>
+  <h2>Zadanie</h2>
+  <p>Oznaczcie zdania budzące wątpliwość. Dla każdego wskażcie sposób weryfikacji i werdykt. Samo stwierdzenie „halucynacja” nie wystarcza.</p>
+  <div class="wide-scroll"><table class="errs">
+    <tr><th style="width:5%">Nr</th><th style="width:33%">Wątpliwe twierdzenie</th><th style="width:33%">Sposób i miejsce weryfikacji</th><th>Werdykt</th></tr>
+  </table></div>
+  <div class="box"><p><b>Reguła trzech pytań</b></p>
+    <ol class="tight"><li>Skąd to wiadomo?</li><li>Czy to źródło istnieje?</li><li>Czy mówi dokładnie to?</li></ol>
+    <p class="note">Gdzie sprawdzać: Google Scholar · doi.org · biblioteka uczelni · pełna lista w zakładce KW. Werdykt: potwierdzone / niepotwierdzone / fałszywe.</p></div>
+  <div class="foot"></div>
+</section>
+
+<!-- HANDOUT 2B -->
+<section class="sheet" id="h2b" data-tab="H2B" data-name="Pięć błędów, wersja B">
+  <div class="runhead">Etyczne wykorzystywanie AI · ANS TWP w Szczecinie · Handout 2B</div>
+  <h1>Identyfikacja pięciu błędów · wersja B</h1>
+  <p class="sub">Blok 1 · bezpieczeństwo wewnętrzne, kryminologia · zespoły trzyosobowe. Tekst wygenerowany na potrzeby ćwiczenia; zawiera pięć celowo wprowadzonych błędów.</p>
+  <div class="text">
+    <h3>Prewencja przestępczości w przestrzeni miejskiej</h3>
+    <p>Teorię „rozbitych okien” sformułowali James Q. Wilson i George Kelling. W artykule z 1992 roku dowodzili, że drobne oznaki nieporządku w przestrzeni publicznej zachęcają do poważniejszych przestępstw. Wdrożenie tej strategii w Nowym Jorku obniżyło przestępczość o dokładnie 50% w ciągu roku.</p>
+    <p>Uzupełnieniem tego podejścia jest teoria rutynowych czynności, której autorem jest Oscar Newman. Zakłada ona, że do przestępstwa dochodzi, gdy spotkają się zmotywowany sprawca, dogodny cel i brak opiekuna. Do jej rozwoju przyczynili się także Marcus Felson i Lawrence Cohan.</p>
+    <p>W polskim piśmiennictwie temat opisano m.in. w pracy: Nowak, A. (2015). Prewencja sytuacyjna w polskich miastach. Przegląd Bezpieczeństwa Wewnętrznego, 7(2), 88-104. https://doi.org/10.4467/pbw.2015.0231.</p>
+  </div>
+  <h2>Zadanie</h2>
+  <p>Oznaczcie zdania budzące wątpliwość. Dla każdego wskażcie sposób weryfikacji i werdykt. Samo stwierdzenie „halucynacja” nie wystarcza.</p>
+  <div class="wide-scroll"><table class="errs">
+    <tr><th style="width:5%">Nr</th><th style="width:33%">Wątpliwe twierdzenie</th><th style="width:33%">Sposób i miejsce weryfikacji</th><th>Werdykt</th></tr>
+  </table></div>
+  <div class="box"><p><b>Reguła trzech pytań</b></p>
+    <ol class="tight"><li>Skąd to wiadomo?</li><li>Czy to źródło istnieje?</li><li>Czy mówi dokładnie to?</li></ol>
+    <p class="note">Gdzie sprawdzać: Google Scholar · doi.org · biblioteka uczelni · pełna lista w zakładce KW. Werdykt: potwierdzone / niepotwierdzone / fałszywe.</p></div>
+  <div class="foot"></div>
+</section>
+
+
+<!-- KARTA WERYFIKACJI -->
+<section class="sheet" id="kw" data-tab="KW" data-name="Karta weryfikacji">
+  <div class="runhead">Etyczne wykorzystywanie AI · ANS TWP w Szczecinie · Karta weryfikacji</div>
+  <h1>Karta weryfikacji</h1>
+  <p class="sub">Blok 1 · do użycia przez cały semestr, przy każdej dokumentacji do portfolio.</p>
+  <h2>Reguła trzech pytań</h2>
+  <table>
+    <tr><th style="width:6%">Nr</th><th style="width:30%">Pytanie</th><th>Jak to sprawdzić</th></tr>
+    <tr><td>1</td><td><b>Skąd to wiadomo?</b></td><td>Szukam źródła podanego w tekście. Nie ma źródła? Nie cytuję.</td></tr>
+    <tr><td>2</td><td><b>Czy to źródło istnieje?</b></td><td>Wklejam tytuł do Google Scholar, a numer DOI na doi.org.</td></tr>
+    <tr><td>3</td><td><b>Czy mówi dokładnie to?</b></td><td>Otwieram źródło i czytam ten fragment. Działający link to za mało: potwierdza tylko pytanie 2.</td></tr>
+  </table>
+  <h2>Kiedy sprawdzać dwa razy</h2>
+  <ul class="tight" style="padding-left:20px;margin:0 0 8px">
+    <li><b>Okrągłe liczby.</b> „Dokładnie 50%”, „aż 90%”. Prawdziwe dane rzadko są tak równe.</li>
+    <li><b>Brak numeru źródła.</b> Nie ma DOI ani linku albo link nie działa.</li>
+    <li><b>Cytat idealnie pod tezę.</b> Poprosiłeś o źródło na poparcie tezy? Model je „znajdzie”, nawet jeśli go nie ma.</li>
+    <li><b>Same pewniki.</b> Prawdziwe badania mają zwykle jakieś „ale”: mała grupa, inny kraj, stare dane.</li>
+  </ul>
+  <h2>Gdzie sprawdzać</h2>
+  <div class="wide-scroll"><table>
+    <tr><th style="width:36%">Co sprawdzam</th><th style="width:32%">Narzędzie</th><th>Adres</th></tr>
+    <tr><td>Czy artykuł istnieje, kto go napisał</td><td>Google Scholar</td><td>scholar.google.com</td></tr>
+    <tr><td>Czy DOI prowadzi do artykułu; czy autor, tytuł i rok się zgadzają</td><td>doi.org; Crossref</td><td>doi.org; search.crossref.org</td></tr>
+    <tr><td>Polskie artykuły naukowe</td><td>Biblioteka Nauki; CEJSH (nauki społeczne)</td><td>bibliotekanauki.pl; cejsh.icm.edu.pl</td></tr>
+    <tr><td>Bazy zagraniczne (np. Scopus, Web of Science, EBSCO)</td><td>Dostęp przez bibliotekę uczelni</td><td>Zapytaj bibliotekarza o swoje konto</td></tr>
+    <tr><td>Psychologia i medycyna</td><td>PubMed</td><td>pubmed.ncbi.nlm.nih.gov</td></tr>
+    <tr><td>Czy czasopismo jest otwarte i recenzowane</td><td>DOAJ</td><td>doaj.org</td></tr>
+    <tr><td>Czy autor istnieje i co publikuje</td><td>ORCID</td><td>orcid.org</td></tr>
+    <tr><td>Czy artykuł nie został wycofany</td><td>Retraction Watch Database</td><td>retractiondatabase.org</td></tr>
+    <tr><td>Liczby i statystyki</td><td>GUS (Bank Danych Lokalnych); Eurostat</td><td>bdl.stat.gov.pl; ec.europa.eu/eurostat</td></tr>
+    <tr><td>Przepisy prawa, aktualne brzmienie</td><td>ISAP (Sejm)</td><td>isap.sejm.gov.pl</td></tr>
+    <tr><td>Wyroki sądów</td><td>CBOSA; portal orzeczeń sądów powszechnych</td><td>orzeczenia.nsa.gov.pl; orzeczenia.ms.gov.pl</td></tr>
+  </table></div>
+  <p class="note">Wyszukiwarki AI z linkami też się przydają, ale link to tylko adres. Dowodem jest to, co przeczytasz po kliknięciu.</p>
+  <h2>Czy to źródło jest naukowe? Pięć pytań</h2>
+  <table>
+    <tr><th style="width:30%">Pytanie</th><th>Na co patrzę</th></tr>
+    <tr><td><b>Kto to napisał?</b></td><td>Czy podano uczelnię lub instytut autora i czy ma inne publikacje w tej dziedzinie (ORCID, Google Scholar).</td></tr>
+    <tr><td><b>Czy ktoś to sprawdził?</b></td><td>Czy czasopismo recenzuje artykuły (zakładka „O czasopiśmie”, „Dla autorów”).</td></tr>
+    <tr><td><b>Jak to zbadano?</b></td><td>Czy opisano, kogo badano, ilu było uczestników i jak zebrano dane.</td></tr>
+    <tr><td><b>Na czym się opiera?</b></td><td>Czy bibliografia jest aktualna i pochodzi z uznanych źródeł.</td></tr>
+    <tr><td><b>Czy coś sprzedaje?</b></td><td>Czy tekst promuje produkt albo usługę, czy autor ma w tym interes.</td></tr>
+  </table>
+  <p class="note">Czerwone flagi: brak recenzji i afiliacji, wysokie opłaty za publikację bez jasnych zasad, dużo błędów językowych, obietnice publikacji w kilka dni. Tak wyglądają tzw. drapieżne czasopisma. Opracowano m.in. na podstawie: Sensemedia, „Jak sprawdzić, czy źródło jest naukowe”.</p>
+  <h2>Mój zapis weryfikacji</h2>
+  <p class="note">Ten sam układ wpisujesz w pole „weryfikacja” w dokumentacji do portfolio. Niepotwierdzone też jest wynikiem: takiego zdania nie wpisuję do pracy.</p>
+  <div class="wide-scroll"><table class="errs">
+    <tr><th style="width:5%">Nr</th><th style="width:33%">Twierdzenie (słowo w słowo)</th><th style="width:33%">Źródło (gdzie sprawdziłem)</th><th>Werdykt</th></tr>
+  </table></div>
+  <div class="foot"></div>
+</section>
+
+<!-- HANDOUT 3 -->
+<section class="sheet" id="h3" data-tab="H3" data-name="Studium przypadków">
+  <div class="runhead">Etyczne wykorzystywanie AI · ANS TWP w Szczecinie · Handout 3</div>
+  <h1>Studium przypadków: pięć sytuacji</h1>
+  <p class="sub">Blok 2 · zespoły · głosowanie kartkami. Dla każdego przypadku: stopień linijki (1-6, Handout 4), kolor i uzasadnienie.</p>
+  <div class="legend">
+    <span class="lg"><b>Zielona:</b> dopuszczalne</span>
+    <span class="ly"><b>Żółta:</b> dopuszczalne pod warunkiem deklaracji i weryfikacji</span>
+    <span class="lr"><b>Czerwona:</b> niedopuszczalne w podanych warunkach</span>
+  </div>
+  <div class="wide-scroll"><table class="cases">
+    <tr><th style="width:15%">Przypadek</th><th style="width:33%">Opis</th><th style="width:15%">Stopień</th><th style="width:13%">Kolor</th><th>Uzasadnienie i lepszy sposób działania</th></tr>
+    <tr><td><b>1. Psychologia</b></td><td>Studentka miała napisać esej o teorii przywiązania. Wpisała polecenie „napisz esej o teorii przywiązania na 3 strony”, skopiowała całość i oddała bez zmian jako własną pracę.</td></tr>
+    <tr><td><b>2. Pedagogika</b></td><td>Student samodzielnie napisał scenariusz zajęć dla przedszkola. Następnie poprosił AI o poprawę stylu, skrócenie o jedną trzecią i wskazanie powtórzeń. Treść merytoryczna pozostała jego.</td></tr>
+    <tr><td><b>3. Bezpieczeństwo wewnętrzne</b></td><td>Student przeczytał trzy artykuły o cyberbezpieczeństwie, poprosił AI o ich streszczenie dla uporządkowania myśli, a następnie napisał własną analizę, cytując oryginalne artykuły.</td></tr>
+    <tr><td><b>4. Zarządzanie</b></td><td>Student przygotowywał analizę SWOT firmy. Poprosił AI o wstępne punkty, przeredagował je samodzielnie, a dane liczbowe sprawdził w raporcie rocznym firmy.</td></tr>
+    <tr><td><b>5. Dowolny kierunek</b></td><td>Studentka przetłumaczyła w całości anglojęzyczny artykuł narzędziem AI i wykorzystała tłumaczenie jako źródło, podając w bibliografii oryginał.</td></tr>
+  </table></div>
+  <div class="foot"></div>
+</section>
+
+<!-- HANDOUT 4 -->
+<section class="sheet" id="h4" data-tab="H4" data-name="Linijka użycia AI i deklaracja">
+  <div class="runhead">Etyczne wykorzystywanie AI · ANS TWP w Szczecinie · Handout 4</div>
+  <h1>Linijka użycia AI i deklaracja</h1>
+  <p class="sub">Blok 2 · materiał do wykorzystania przy każdej pracy w semestrze i w portfolio.</p>
+  <table>
+    <tr><th style="width:18%">Stopień</th><th>Zakres użycia AI</th><th style="width:24%">Wymóg</th></tr>
+    <tr><td><b>1. Ortografia</b></td><td>Korekta literówek i interpunkcji we własnym tekście.</td><td class="lg">Zwykle bez deklaracji</td></tr>
+    <tr><td><b>2. Redakcja</b></td><td>Przeredagowanie i skrócenie tekstu napisanego samodzielnie.</td><td class="ly">Zalecana deklaracja</td></tr>
+    <tr><td><b>3. Plan</b></td><td>Burza mózgów i struktura; treść powstaje samodzielnie.</td><td class="ly">Zalecana deklaracja</td></tr>
+    <tr><td><b>4. Streszczenie</b></td><td>Porządkowanie źródeł przeczytanych samodzielnie; cytowane są oryginały.</td><td class="ly">Deklaracja i weryfikacja</td></tr>
+    <tr><td><b>5. Fragmenty</b></td><td>Fragmenty z AI przeredagowane i zweryfikowane w źródłach.</td><td class="ly">Deklaracja i weryfikacja</td></tr>
+    <tr><td><b>6. Całość</b></td><td>Tekst z AI oddany jako własny, bez wkładu autora.</td><td class="lr">Niedopuszczalne</td></tr>
+  </table>
+  <p class="note">Granica zależy od polecenia prowadzącego i zasad przedmiotu; w razie braku informacji należy zapytać przed użyciem AI.</p>
+  <h2>Deklaracja użycia AI: elementy</h2>
+  <p>Narzędzie · cel i zakres użycia · część wykonana samodzielnie · sposób weryfikacji.</p>
+  <h2>Przykłady</h2>
+  <div class="box">
+    <p><b>Redakcja:</b> „Do poprawy stylu i skrócenia tekstu użyto asystenta AI. Treść merytoryczną, dobór źródeł i wnioski opracowano samodzielnie.”</p>
+    <p><b>Tłumaczenie:</b> „Do przetłumaczenia artykułu podanego w bibliografii użyto narzędzia AI; tłumaczenie zweryfikowano z oryginałem. Analiza i wnioski są własne.”</p>
+    <p><b>Fragmenty:</b> „Asystent AI zaproponował wstępne punkty analizy, które przeredagowano samodzielnie. Dane liczbowe sprawdzono w raporcie źródłowym.”</p>
+  </div>
+  <h2>Własna deklaracja</h2>
+  <table>
+    <tr><th style="width:34%">Element</th><th>Zapis</th></tr>
+    <tr><td class="lbl">Narzędzie</td><td><div class="f s"></div></td></tr>
+    <tr><td class="lbl">Cel i zakres użycia</td><td><div class="f"></div></td></tr>
+    <tr><td class="lbl">Część wykonana samodzielnie</td><td><div class="f"></div></td></tr>
+    <tr><td class="lbl">Sposób weryfikacji</td><td><div class="f"></div></td></tr>
+  </table>
+  <div class="foot"></div>
+</section>
+
+<!-- HANDOUT 5 -->
+<section class="sheet" id="h5" data-tab="H5" data-name="Dokumentacja do portfolio">
+  <div class="runhead">Etyczne wykorzystywanie AI · ANS TWP w Szczecinie · Handout 5</div>
+  <h1>Dokumentacja użycia AI do portfolio</h1>
+  <p class="sub">Szablon zgodny z formularzem elektronicznym. Portfolio: 3 dokumentacje (60%) + refleksja końcowa (40%); zaliczenie: min. 2 z 3 + refleksja.</p>
+  <table>
+    <tr><td class="lbl">1. Zadanie i przedmiot<br><span class="note" style="font-weight:400">Przedmiot, cel zadania, część, która miała pozostać samodzielna.</span></td><td><div class="f tall"></div></td></tr>
+    <tr><td class="lbl">2. Narzędzie, polecenie, wynik<br><span class="note" style="font-weight:400">Typ narzędzia, pełna treść polecenia, fragment wyniku (zrzut ekranu w załączniku).</span></td><td><div class="f xl"></div></td></tr>
+    <tr><td class="lbl">3. Weryfikacja i poprawki<br><span class="note" style="font-weight:400">Co sprawdzono, gdzie, z jakim wynikiem; co poprawiono lub odrzucono.</span></td><td><div class="f xl"></div></td></tr>
+    <tr><td class="lbl">4. Ocena etyczna<br><span class="note" style="font-weight:400">Stopień linijki (1-6) i uzasadnienie; treść deklaracji użycia AI.</span></td><td><div class="opts" data-opts="1|2|3|4|5|6" data-prefix="Stopień:"></div><div class="f tall" style="margin-top:6px"></div></td></tr>
+  </table>
+  <h2>Terminy</h2>
+  <table>
+    <tr><th></th><th>Niestacjonarne</th><th>Stacjonarne</th></tr>
+    <tr><td><b>Dokumentacja 1</b></td><td>30.11.2026</td><td>30.11.2026</td></tr>
+    <tr><td><b>Dokumentacja 2</b></td><td>20.12.2026</td><td>18.12.2026</td></tr>
+    <tr><td><b>Dokumentacja 3</b></td><td>24.01.2027</td><td>29.01.2027</td></tr>
+    <tr><td><b>Refleksja końcowa</b></td><td>07.02.2027</td><td>12.02.2027</td></tr>
+  </table>
+  <div class="foot"></div>
+</section>
+
+<!-- KARTA 6 -->
+<section class="sheet" id="k6" data-tab="K6" data-name="Przekazywanie danych">
+  <div class="runhead">Etyczne wykorzystywanie AI · ANS TWP w Szczecinie · Karta 6</div>
+  <h1>Przekazywanie danych: wysłać, zmienić, nie wysyłać</h1>
+  <p class="sub">Blok 2 · w parach.</p>
+  <div class="legend">
+    <span class="lg"><b>A:</b> dopuszczalne w tej postaci</span>
+    <span class="ly"><b>B:</b> wymaga zmiany przed użyciem</span>
+    <span class="lr"><b>C:</b> nie przekazywać do publicznego narzędzia AI</span>
+  </div>
+  <div class="wide-scroll"><table class="data">
+    <tr><th style="width:5%">Nr</th><th style="width:44%">Sytuacja</th><th style="width:14%">A / B / C</th><th>Uzasadnienie</th></tr>
+    <tr><td>1</td><td>Własny, nieopublikowany szkic eseju bez danych innych osób; prośba o pytania krytyczne.</td></tr>
+    <tr><td>2</td><td>Tabela z nazwiskami studentów, ocenami i numerami albumów; prośba o obliczenie średniej.</td></tr>
+    <tr><td>3</td><td>Notatka z praktyk bez imienia pacjenta, ale z wiekiem, rzadką chorobą, datą wizyty i nazwą małej miejscowości.</td></tr>
+    <tr><td>4</td><td>Tytuł publicznej publikacji i jej DOI; prośba o pytania pomocne w lekturze.</td></tr>
+    <tr><td>5</td><td>Zrzut ekranu z hasłem do systemu uczelni i numerem telefonu; prośba o wyjaśnienie komunikatu.</td></tr>
+    <tr><td>6</td><td>Całkowicie fikcyjny opis przypadku, oznaczony jako fikcyjny.</td></tr>
+  </table></div>
+  <h2>Przeredagowanie jednego ryzykownego polecenia</h2>
+  <table>
+    <tr><td class="lbl" style="width:28%">Wybrany przypadek (nr)</td><td><div class="opts" data-opts="1|2|3|4|5|6"></div></td></tr>
+    <tr><td class="lbl">Bezpieczniejsza wersja, przekazująca tylko informacje niezbędne do celu</td><td><div class="f xl"></div></td></tr>
+  </table>
+  <p class="note">Dane osobowe to także kombinacja szczegółów pozwalająca rozpoznać osobę. Zamiana imienia na „Osoba A” to pseudonimizacja, nie anonimizacja (RODO, art. 4, 5, 9).</p>
+  <div class="foot"></div>
+</section>
+
+<!-- KARTA 7 -->
+<section class="sheet" id="k7" data-tab="K7" data-name="Lista kontrolna przed wysłaniem">
+  <div class="runhead">Etyczne wykorzystywanie AI · ANS TWP w Szczecinie · Karta 7</div>
+  <h1>Lista kontrolna przed wysłaniem polecenia</h1>
+  <p class="sub">Blok 2 · do zastosowania przed przekazaniem narzędziu AI tekstu, pliku, zdjęcia lub zrzutu ekranu.</p>
+  <ul class="check">
+    <li><input type="checkbox"><span><b>Cel:</b> zadania nie da się wykonać bez przekazania materiału źródłowego.</span></li>
+    <li><input type="checkbox"><span><b>Uprawnienie:</b> polecenie prowadzącego, zasady uczelni i miejsca praktyk dopuszczają takie użycie.</span></li>
+    <li><input type="checkbox"><span><b>Minimum danych:</b> usunięto wszystko, co zbędne do celu.</span></li>
+    <li><input type="checkbox"><span><b>Identyfikatory bezpośrednie:</b> brak imion, nazwisk, adresów, telefonów, e-maili, numerów albumów, PESEL, zdjęć twarzy.</span></li>
+    <li><input type="checkbox"><span><b>Identyfikatory pośrednie:</b> kombinacja wieku, miejsca, daty, rzadkiego zdarzenia, stanowiska nie wskazuje osoby.</span></li>
+    <li><input type="checkbox"><span><b>Dane szczególne i poufne:</b> brak danych o zdrowiu, ocen innych osób, dokumentów wewnętrznych, haseł, kodów.</span></li>
+    <li><input type="checkbox"><span><b>Pliki i obrazy:</b> sprawdzono widoczny tekst, marginesy zrzutu, komentarze, nazwy plików, metadane.</span></li>
+    <li><input type="checkbox"><span><b>Narzędzie:</b> sprawdzono aktualne zasady usługi (historia, wykorzystanie treści, usuwanie danych).</span></li>
+    <li><input type="checkbox"><span><b>Ponowna identyfikacja:</b> osoba znająca kontekst nie rozpozna, kogo dotyczy treść.</span></li>
+    <li><input type="checkbox"><span><b>Wynik:</b> przed użyciem zostaną zweryfikowane fakty, cytaty i źródła.</span></li>
+  </ul>
+  <h2>Procedura ograniczania danych</h2>
+  <ol class="tight">
+    <li>Określić minimum informacji potrzebnych do celu; często wystarcza pytanie ogólne.</li>
+    <li>Usunąć dane bezpośrednie.</li>
+    <li>Uogólnić szczegóły pośrednie (dokładna data → przedział, nazwa miejscowości → typ miejsca).</li>
+    <li>Zastąpić rzeczywistą sytuację przykładem syntetycznym, jeśli cel dydaktyczny na to pozwala.</li>
+    <li>Przy braku pewności lub obowiązku poufności: wyłącznie pytanie abstrakcyjne lub narzędzie dopuszczone przez instytucję.</li>
+  </ol>
+  <h2>Przykład</h2>
+  <div class="box">
+    <p><b>Wersja ryzykowna:</b> „Przeanalizuj notatkę o 8-letniej dziewczynce z [mała miejscowość], z rzadką diagnozą, uczennicy [szkoła]…”</p>
+    <p><b>Wersja bezpieczniejsza:</b> „Jakie pytania warto zadać przy planowaniu wsparcia ucznia z trudnościami w koncentracji? Nie analizuj konkretnej osoby; podaj ramę obserwacji i kwestie do konsultacji z opiekunem praktyk.”</p>
+  </div>
+  <div class="foot"></div>
+</section>
+
+<!-- KARTA 8 -->
+<section class="sheet" id="k8" data-tab="K8" data-name="Stronniczość i pochodzenie">
+  <div class="runhead">Etyczne wykorzystywanie AI · ANS TWP w Szczecinie · Karta 8</div>
+  <h1>Stronniczość i pochodzenie materiału</h1>
+  <p class="sub">Blok 2 · zespoły trzyosobowe.</p>
+  <h2>Część 1. Dwa opisy kandydatów</h2>
+  <p>Kandydatka i kandydat do praktyk mają identyczne kwalifikacje i ten sam projekt. Opisy wygenerowano po różnym sformułowaniu polecenia.</p>
+  <div class="box">
+    <p><b>Opis A:</b> „Kandydatka wydaje się komunikatywna i dobrze pasuje do pracy zespołowej, choć warto upewnić się, czy poradzi sobie z zadaniami technicznymi.”</p>
+    <p><b>Opis B:</b> „Kandydat wykazuje potencjał techniczny i może szybko przejąć samodzielne zadania; komunikację da się rozwijać podczas praktyk.”</p>
+  </div>
+  <table>
+    <tr><th style="width:38%">Pytanie</th><th>Odpowiedź zespołu</th></tr>
+    <tr><td class="lbl">Jakie założenia są niepotwierdzone?</td><td><div class="f"></div></td></tr>
+    <tr><td class="lbl">Jakie kryteria powinny być identyczne dla obu osób?</td><td><div class="f"></div></td></tr>
+    <tr><td class="lbl">Polecenie oceniające wyłącznie udokumentowane kompetencje</td><td><div class="f tall"></div></td></tr>
+  </table>
+  <h2>Część 2. Ustalanie pochodzenia materiału</h2>
+  <p>Dla każdego przykładu: jak ustalić autora, datę, kontekst i pierwotne miejsce publikacji? Wygląd materiału nie przesądza o jego autentyczności.</p>
+  <div class="wide-scroll"><table class="prov">
+    <tr><th style="width:28%">Materiał</th><th>Autor i pierwsza publikacja</th><th>Data i kontekst</th><th>Niezależne potwierdzenie</th></tr>
+    <tr><td>Zrzut obrazu z podpisem „tak wyglądało wydarzenie”, bez daty i autora</td></tr>
+    <tr><td>Fragment nagrania głosu znanej osoby, bez pełnej wypowiedzi</td></tr>
+    <tr><td>Prawdziwe zdjęcie podpisane nazwą innego miasta i roku</td></tr>
+  </table></div>
+  <div class="foot"></div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var PREFIX = "etykaAI_handouty_";
+  function sget(k){ try{ return localStorage.getItem(PREFIX+k); }catch(e){ return null; } }
+  function sset(k,v){ try{ if(v===""||v==null) localStorage.removeItem(PREFIX+k); else localStorage.setItem(PREFIX+k,v); }catch(e){} }
+
+  function el(tag, cls, attrs){ var e=document.createElement(tag); if(cls) e.className=cls; if(attrs) for(var a in attrs) e.setAttribute(a,attrs[a]); return e; }
+  function field(cls){ return el("div","f"+(cls?" "+cls:"")); }
+  function opts(list, prefix){ var d=el("div","opts",{"data-opts":list}); if(prefix) d.setAttribute("data-prefix",prefix); return d; }
+
+  /* Wiersze tabel 2A / 2B */
+  document.querySelectorAll("table.errs").forEach(function(t){
+    var n=t.closest("#kw")?3:5;
+    for(var i=1;i<=n;i++){
+      var tr=el("tr"); var td0=el("td"); td0.textContent=i; tr.appendChild(td0);
+      var a=el("td"); a.appendChild(field()); tr.appendChild(a);
+      var b=el("td"); b.appendChild(field()); tr.appendChild(b);
+      var c=el("td"); c.appendChild(opts("potwierdzone:g|niepotwierdzone:y|fałszywe:r")); tr.appendChild(c);
+      t.appendChild(tr);
+    }
+  });
+  /* Handout 3 */
+  document.querySelectorAll("table.cases tr").forEach(function(tr,i){
+    if(i===0) return;
+    var s=el("td"); s.appendChild(opts("1|2|3|4|5|6")); tr.appendChild(s);
+    var k=el("td"); k.appendChild(opts("zielona:g|żółta:y|czerwona:r")); tr.appendChild(k);
+    var u=el("td"); u.appendChild(field("tall")); tr.appendChild(u);
+  });
+  /* Karta 6 */
+  document.querySelectorAll("table.data tr").forEach(function(tr,i){
+    if(i===0) return;
+    var k=el("td"); k.appendChild(opts("A:g|B:y|C:r")); tr.appendChild(k);
+    var u=el("td"); u.appendChild(field()); tr.appendChild(u);
+  });
+  /* Karta 8 */
+  document.querySelectorAll("table.prov tr").forEach(function(tr,i){
+    if(i===0) return;
+    for(var j=0;j<3;j++){ var td=el("td"); td.appendChild(field("tall")); tr.appendChild(td); }
+  });
+  /* Stopka z imieniem i kierunkiem */
+  document.querySelectorAll(".foot").forEach(function(f){
+    f.innerHTML='<label>Imię i nazwisko / zespół: <div class="f"></div></label><label style="max-width:260px">Kierunek: <div class="f"></div></label>';
+  });
+
+  /* Pola edytowalne, przełączniki, checkboxy z zapisem */
+  var sheets=[].slice.call(document.querySelectorAll(".sheet"));
+  sheets.forEach(function(sh){
+    var id=sh.id;
+    sh.querySelectorAll(".f").forEach(function(f,i){
+      var k=id+"_f"+i; f.setAttribute("contenteditable","true"); f.setAttribute("spellcheck","true");
+      if(!f.closest(".foot")) f.setAttribute("data-ph","wpisz tutaj…");
+      var v=sget(k); if(v) f.innerText=v;
+      f.addEventListener("input",function(){ var t=f.innerText; if(t.trim()===""){ f.innerHTML=""; t=""; } sset(k,t); });
+      f.addEventListener("paste",function(e){ e.preventDefault(); var t=(e.clipboardData||window.clipboardData).getData("text"); document.execCommand("insertText",false,t); });
+    });
+    sh.querySelectorAll(".opts").forEach(function(o,i){
+      var k=id+"_o"+i, cur=sget(k);
+      if(o.dataset.prefix){ var p=el("span"); p.textContent=o.dataset.prefix; p.style.cssText="font-size:12px;margin-right:4px;align-self:center"; o.appendChild(p); }
+      o.dataset.opts.split("|").forEach(function(item){
+        var parts=item.split(":"), label=parts[0], col=parts[1]||"";
+        var b=el("button",col,{type:"button"}); b.textContent=label;
+        if(cur===label) b.classList.add("sel");
+        b.addEventListener("click",function(){
+          var was=b.classList.contains("sel");
+          o.querySelectorAll("button").forEach(function(x){x.classList.remove("sel");});
+          if(!was){ b.classList.add("sel"); sset(k,label); } else sset(k,"");
+        });
+        o.appendChild(b);
+      });
+    });
+    sh.querySelectorAll('input[type="checkbox"]').forEach(function(c,i){
+      var k=id+"_c"+i; c.checked=sget(k)==="1";
+      c.addEventListener("change",function(){ sset(k,c.checked?"1":""); });
+    });
+  });
+
+  /* Nawigacja */
+  var tabs=document.getElementById("tabs");
+  sheets.forEach(function(sh){
+    var b=el("button","",{type:"button",title:sh.dataset.name}); b.textContent=sh.dataset.tab;
+    b.addEventListener("click",function(){ location.hash=sh.id; });
+    tabs.appendChild(b); sh._btn=b;
+  });
+  function show(){
+    var id=(location.hash||"").slice(1).toLowerCase();
+    var target=sheets.filter(function(s){return s.id===id;})[0]||sheets[0];
+    sheets.forEach(function(s){ var on=s===target; s.classList.toggle("on",on); s._btn.setAttribute("aria-current",on?"true":"false"); });
+    document.title=target.dataset.tab+" · "+target.dataset.name;
+    window.scrollTo(0,0);
+  }
+  window.addEventListener("hashchange",show); show();
+
+  var clr=document.getElementById("clear"), armed=null;
+  function disarm(){ if(armed){ clearTimeout(armed); armed=null; } clr.classList.remove("confirm"); clr.textContent="Wyczyść ten arkusz"; }
+  window.addEventListener("hashchange",disarm);
+  clr.addEventListener("click",function(){
+    var sh=document.querySelector(".sheet.on"); if(!sh) return;
+    if(!armed){ clr.classList.add("confirm"); clr.textContent="Na pewno? Kliknij jeszcze raz"; armed=setTimeout(disarm,4000); return; }
+    disarm();
+    sh.querySelectorAll(".f").forEach(function(f){ f.innerHTML=""; f.dispatchEvent(new Event("input")); });
+    sh.querySelectorAll(".opts button.sel").forEach(function(b){ b.click(); });
+    sh.querySelectorAll('input[type="checkbox"]').forEach(function(c){ c.checked=false; c.dispatchEvent(new Event("change")); });
+  });
+})();
+</script>
+
+</body>
+</html>
